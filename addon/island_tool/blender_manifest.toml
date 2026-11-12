@@ -1,0 +1,21 @@
+schema_version = "1.0.0"
+
+id = "island_tool"
+version = "1.1.0"
+name = "Island Tool"
+tagline = "Build from UV islands and nest planar islands on sheets"
+maintainer = "Local Development"
+type = "add-on"
+
+blender_version_min = "5.2.0"
+platforms = ["windows-x64"]
+license = ["SPDX:GPL-3.0-or-later"]
+wheels = [
+  "./wheels/pyclipper-1.4.0-cp313-cp313-win_amd64.whl",
+]
+
+[build]
+paths_exclude_pattern = [
+  "__pycache__/",
+  "*.pyc",
+]
