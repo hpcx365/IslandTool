@@ -1,38 +1,53 @@
 # Island Tool
 
-Island Tool combines UV-island mesh reconstruction and planar mesh-island sheet
-nesting in one Blender 5.2 extension for Windows x64.
+[简体中文](README.zh-CN.md)
 
-## Install
-
-Install `island_tool-1.1.0.zip` through **Edit > Preferences > Get Extensions >
-Install from Disk**. Disable the standalone **UV Island To Mesh** and **Mesh
-Island Sheet Nesting** extensions before enabling Island Tool.
-
-## Languages
-
-The extension includes English (`en_US`) and Simplified Chinese (`zh_HANS`). It
-follows Blender's language and interface-translation settings automatically.
+Island Tool is a Blender 5.2 extension for Windows x64 that combines UV-island
+reconstruction and planar mesh-island sheet nesting.
 
 ## UV Island Copy
 
-In Edit Mode with Vertex Select enabled, select vertex A and then vertex B. Run
-**Duplicate Island from UV** from the `Island Tool` N-sidebar tab, the mesh
-right-click menu, or the 3D View **Mesh** menu.
+In Mesh Edit Mode with Vertex Select enabled, select vertex A and then vertex B.
+Run **Duplicate Island from UV** from the **Island Tool** N-sidebar tab, the mesh
+context menu, or the **Mesh** menu.
 
-The seam-bounded face island uniquely identified by A and B is duplicated. Its
-active UVs become local XY coordinates, Z is set to zero, its area is scaled to
-match the original 3D surface area, and A-to-B is rotated to local `+Y`. Only the
-new vertices are selected on success. Validation failures leave the mesh
-unchanged.
+The identified seam-bounded island is duplicated and rebuilt on the local XY
+plane from its active UV map. The copy keeps the original island's area and is
+oriented so A-to-B points along local `+Y`. On success, only the new vertices are
+selected. Invalid selections or UV data leave the mesh unchanged.
 
 ## Sheet Nesting
 
 In Object Mode, open **Island Tool > Sheet Nesting** in the N sidebar. Configure
-sheet sizes, quantities, bleed, outline output, and solver quality, then run
-**Nest Mesh Islands**.
+one or more sheet sizes and quantities, then choose bleed, outline output, and
+solver quality before running **Nest Mesh Islands**.
 
-The source must be an identity-transformed planar XY mesh without modifiers or
-shape keys. Nesting preserves the source and creates output objects only after a
-complete layout succeeds. Placement uses translation only. The extension bundles
-`pyclipper 1.4.0` and performs no runtime downloads.
+The source must be a planar XY mesh with an identity transform, no modifiers or
+shape keys, and valid closed face islands. The source object is preserved.
+Islands are placed by translation only, and output is created only when a valid
+layout is found. Interactive runs show progress and can be cancelled with `Esc`.
+
+## Build
+
+From the repository root, using Blender 5.2 or newer on Windows x64:
+
+```powershell
+blender --command extension build `
+  --source-dir addon\island_tool `
+  --output-dir .
+
+blender --command extension validate island_tool-1.1.0.zip
+```
+
+Run the UV tests:
+
+```powershell
+blender --background --factory-startup --python tests\test_uv.py
+```
+
+The nesting tests require `pyclipper` to be available to the Blender process:
+
+```powershell
+$env:PYTHONPATH = ".test_deps"
+blender --background --factory-startup --python tests\test_nesting.py
+```
